@@ -2,11 +2,17 @@ from gpiozero import Motor
 import time
 import keyboard
 import sys, tty, termios
+from gpiostepper import Stepper
 
 front_left = Motor(27, 22, pwm=False)
 front_right = Motor(3, 2, pwm=False)
 back_left = Motor(24, 23, pwm=False)
 back_right = Motor(16, 20, pwm=False)
+
+left_arm = Stepper(motor_pins=[6, 13, 19, 26], number_of_steps = 64, step_sequence = [[1, 0, 0, 1], [1, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1]])
+left_arm.set_speed(64*20)
+right_arm = Stepper(motor_pins=[14, 15, 18, 12], number_of_steps = 64, step_sequence = [[1, 0, 0, 1], [1, 0, 0, 0], [1, 1, 0, 0], [0, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1]])
+right_arm.set_speed(64*20)
 
 def all_forward(duration=0):
     front_left.forward()
@@ -57,7 +63,21 @@ def just_dance():
     all_right(1)
     turn_right(0.5)
     turn_left(0.5)
+    rotate_arm(right_arm, "clockwise", 64*10)
+    rotate_arm(right_arm, "counter", 64*10)
+    rotate_arm(left_arm, "clockwise", 64*10)
+    rotate_arm(left_arm, "counter", 64*10)
     all_stop()
+
+def wave_arm(arm):
+    rotate_arm(arm, "clockwise", 64*50)
+    rotate_arm(arm, "counter", 64*50)
+
+def rotate_arm(arm, direction, steps=32):
+    if direction == "clockwise":
+        arm.step(steps)
+    elif direction == "counter":
+        arm.step(-steps)
 
 def all_stop():
     front_left.stop()
@@ -94,5 +114,16 @@ while True:
         all_left()   
     elif key == "d":
         just_dance()
-
+    elif key == "p":
+        wave_arm(right_arm)
+    elif key == "o":
+        wave_arm(left_arm)
+    elif key == "y":
+        rotate_arm(left_arm, "clockwise")
+    elif key == "h":
+        rotate_arm(left_arm, "counter")
+    elif key == "u":
+        rotate_arm(right_arm, "clockwise")
+    elif key == "j":
+        rotate_arm(right_arm, "counter")
 print("Bring me some good goop next time")
