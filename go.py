@@ -63,11 +63,11 @@ def just_dance():
     all_right(1)
     turn_right(0.5)
     turn_left(0.5)
+    all_stop()
     rotate_arm(right_arm, "clockwise", 64*10)
     rotate_arm(right_arm, "counter", 64*10)
     rotate_arm(left_arm, "clockwise", 64*10)
     rotate_arm(left_arm, "counter", 64*10)
-    all_stop()
 
 def wave_arm(arm):
     rotate_arm(arm, "clockwise", 64*50)
